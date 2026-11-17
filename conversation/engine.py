@@ -11,6 +11,8 @@ from conversation.web import NetworkPolicy, search
 def record(text, reply, state, evidence, sources=None):
     # Don't allow a model response to silently load remote images in OFF mode.
     reply = re.sub(r'!\[[^\]]*\]\([^)]*\)', '', reply)
+    count = len(sources or [])
+    reply = re.sub(r'\[(\d+)\](?!\()', lambda m: m.group(0) if 1 <= int(m[1]) <= count else '', reply)
     message = {'role': 'assistant', 'content': reply, 'action': 'conversation',
                'sources': sources or [], 'evidence': evidence}
     state['messages'].extend([{'role': 'user', 'content': text}, message])
