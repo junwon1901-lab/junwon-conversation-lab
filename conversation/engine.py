@@ -1,0 +1,79 @@
+"""Exact local commands first, then free conversation and bounded retrieval."""
+import re
+from llm_lab.input_data import command
+from llm_lab.agent import execute_plan
+from llm_lab import session as memory
+from llm_lab.client import LLMError
+from conversation.model import ConversationModel
+from conversation.web import NetworkPolicy, search
+
+
+def record(text, reply, state, evidence, sources=None):
+    # Don't allow a model response to silently load remote images in OFF mode.
+    reply = re.sub(r'!\[[^\]]*\]\([^)]*\)', '', reply)
+    message = {'role': 'assistant', 'content': reply, 'action': 'conversation',
+               'sources': sources or [], 'evidence': evidence}
+    state['messages'].extend([{'role': 'user', 'content': text}, message])
+    state['messages'] = state['messages'][-200:]
+    state['events'].append({**evidence, 'time': memory.now(), 'action': 'conversation'})
+    state['events'] = state['events'][-100:]
+    memory.save(state)
+    return {'reply': reply, 'action': 'conversation', 'sources': sources or [], 'evidence': evidence}
+
+
+def handle(text, state, enabled=False, model=None, researcher=search, progress=lambda _: None):
+    if not isinstance(text, str) or not text.strip() or len(text) > 100_000:
+        raise ValueError('입력은 1~100,000자로 작성하세요.')
+    policy = NetworkPolicy(enabled)
+    text = text.strip()
+    plan = command(text, state)
+    if plan is not None:
+        progress('입력한 데이터와 명령을 확인하고 Python으로 계산하고 있습니다.')
+        return execute_plan(text, state, plan, {'model': '기존 Python 분석', 'seconds': 0, 'internet': enabled, 'network_used': False})
+    if len(text) > 4000:
+        raise ValueError('일반 대화는 한 번에 4,000자 이내로 나누어 주세요. 데이터 입력은 100,000자까지 가능합니다.')
+    model = model or ConversationModel()
+    if not enabled and not model.available():
+        return record(text, '지금은 인터넷 OFF이고 대화 모델이 아직 준비되지 않았습니다. **선형회귀 해줘**, **비선형회귀 해줘**, **신경망 학습해줘**와 직접 입력한 데이터 분석은 바로 사용할 수 있어요. ON에서 모델을 한 번 준비하면 OFF에서도 일반 대화를 이어갈 수 있습니다.', state,
+                      {'model': '오프라인 안내', 'internet': False, 'network_used': False})
+    progress('이전 대화와 현재 질문을 읽고 있습니다. 첫 대화는 모델 다운로드가 필요할 수 있습니다.')
+    try:
+        plan, routing = model.route(text, state, policy)
+    except LLMError:
+        # A failed classifier never executes a tool; ordinary dialogue can still continue.
+        plan, routing = {'action': 'chat', 'query': '', 'degree': 2, 'values': {}}, {'route_fallback': True}
+    if enabled and re.search(r'(?:검색|찾아)\s*(?:해서|해서\s*알려|해\s*줘|줘|봐)|search\s+(?:for|the)', text, re.I):
+        plan['action'] = 'search'
+        plan['query'] = plan.get('query') or text[:180]
+    if routing.get('needs_literal_prediction'):
+        columns = state.get('dataset', {}).get('columns', [])[:-1] or ['Fn','Rn','Cp','Cb','Cw','L_B','B_T','LCB_L']
+        return record(text, '숫자를 정확히 계산에 전달할 수 있도록 다음 형식으로 입력해 주세요: `예측: ' + ', '.join(c+'=값' for c in columns) + '`. 등록한 입력 열의 값을 모두 적으면 학습한 모델로 예측합니다.', state, routing)
+    if plan['action'] not in ('chat', 'search'):
+        progress('질문을 분석 요청으로 해석했습니다. Python으로 실제 계산하고 있습니다.')
+        return execute_plan(text, state, plan, {**routing, 'internet': enabled, 'network_used': False})
+    sources, search_error = [], None
+    if plan['action'] == 'search' and enabled:
+        query = plan.get('query') or text
+        progress('인터넷에서 관련 자료를 찾고 있습니다: ' + query)
+        try:
+            sources = researcher(query, policy)
+            if not sources:
+                search_error = '검색 결과가 없습니다.'
+            else:
+                state['last_sources'] = sources
+        except Exception as exc:
+            # Search outages must not erase conversation or prevent local calculations.
+            search_error = '검색 서비스에 연결하지 못했습니다.'
+        state['search_status'] = {'ok': bool(sources), 'checked_at': memory.now(), 'query': query}
+    # A follow-up may explain a previously retrieved passage without claiming a new search.
+    previous_sources = state.get('last_sources', []) if not sources and not search_error else []
+    progress('검색 자료와 대화 맥락을 바탕으로 답변을 작성하고 있습니다.' if sources else '대화 맥락을 바탕으로 답변을 작성하고 있습니다.')
+    reply, evidence = model.answer(text, state, policy, sources=sources or previous_sources, search_error=search_error)
+    if search_error:
+        reply = '**이번 검색을 완료하지 못했습니다. 최신 사실은 확인되지 않았습니다.**\n\n' + reply
+    if evidence.get('truncated'):
+        reply += '\n\n_(한 번의 응답 길이에 도달했습니다. “이어서 설명해줘”로 계속할 수 있습니다.)_'
+    evidence.update({'internet': enabled, 'network_used': bool(sources) or bool(search_error),
+                     'search_attempted': plan['action'] == 'search', 'search_error': search_error,
+                     'reused_sources': bool(previous_sources), 'routing_seconds': routing.get('seconds', 0)})
+    return record(text, reply, state, evidence, sources or previous_sources)
