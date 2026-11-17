@@ -1,6 +1,6 @@
 :root {color-scheme: light;}
 [data-testid="stAppViewContainer"] {background:#fcfdfc;}
-.stMainBlockContainer {max-width:1100px;padding-top:2.2rem;padding-bottom:11rem;}
+.stMainBlockContainer {max-width:1100px;padding-top:2.2rem;padding-bottom:2rem;}
 [data-testid="stHeader"]{background:transparent;}
 [data-testid="stSidebar"]{background:#f0f4f2;border-right:1px solid #e0e8e2;}
 [data-testid="stSidebar"] h2{font-size:1.35rem;letter-spacing:-.5px;}
@@ -23,10 +23,10 @@
 .ideas p{margin:12px 0 0;color:#84938b;font-size:.86rem;line-height:1.8;}
 [data-testid="stChatMessage"]{border-radius:16px;background:#f4f7f5;margin:15px 0;padding:22px;}
 [data-testid="stChatInput"]{border:1px solid #bdd0c5;border-radius:18px;box-shadow:0 6px 20px #223b3410;}
-.st-key-persistent_guide{background:#f4f7f5;border:1px solid #dfe8e3;border-radius:14px;padding:14px 18px;margin-top:22px;position:sticky;bottom:82px;z-index:3;}
+.st-key-persistent_guide{background:#f4f7f5;border:1px solid #dfe8e3;border-radius:14px;padding:14px 18px;margin-top:8px;}
 .st-key-persistent_guide p{font-size:.76rem;line-height:1.55;margin-bottom:6px;}
 .lab-network{display:flex;align-items:center;gap:12px;padding:20px 0;flex-wrap:wrap;}
 .lab-layer{border:1px solid #cdddce;border-radius:12px;padding:14px;text-align:center;min-width:75px;font-size:.75rem;background:#fff;}
 .lab-layer strong{display:block;font-size:1.4rem;color:#197c73;}
 .lab-equation{background:#e9f2ed;padding:16px;border-radius:10px;font-size:1.2rem;}
-@media(max-width:760px){.stMainBlockContainer{padding:1rem 1rem 8rem}.hero{padding-top:28px}.hero h1{font-size:2.1rem}.ideas{grid-template-columns:1fr;gap:8px}.ideas>div{padding:15px}.ideas small{margin-bottom:6px}.ideas p{margin-top:6px}.connection span{float:none;display:block;margin-top:5px}.st-key-persistent_guide{bottom:75px;padding:10px}.st-key-persistent_guide p{font-size:.7rem}}
+@media(max-width:760px){.stMainBlockContainer{padding:1rem 1rem 2rem}.hero{padding-top:28px}.hero h1{font-size:2.1rem}.ideas{grid-template-columns:1fr;gap:8px}.ideas>div{padding:15px}.ideas small{margin-bottom:6px}.ideas p{margin-top:6px}.connection span{float:none;display:block;margin-top:5px}.st-key-persistent_guide{padding:10px}.st-key-persistent_guide p{font-size:.7rem}}

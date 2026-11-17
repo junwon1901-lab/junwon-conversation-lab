@@ -58,6 +58,7 @@ def render():
         st.markdown('**기록 다루기**\n\n`이전 결과 보여줘`\n\n`보고서 만들어줘`\n\n`새 대화 시작`')
         st.markdown('---')
         st.caption('무료 CPU 공개 모델 · 유료 API 키 불필요\n\n모델 최초 준비에는 시간이 걸립니다. 서버가 재시작되면 대화가 초기화될 수 있습니다.')
+        st.caption('ON/OFF는 앱의 외부 접근 설정입니다. 웹사이트 접속에는 인터넷이 필요하며, 실제 인터넷 단절 환경에서는 PC 로컬 실행을 사용합니다.')
         st.markdown(f'[소스 코드 ↗]({REPO})' + (f'　[보고서 ↗]({REPORT})' if REPORT else ''))
     left, right = st.columns([3, 1])
     with left:
@@ -87,9 +88,9 @@ def render():
             if evidence:
                 mode = '이전 검색 자료 참고' if evidence.get('reused_sources') else '웹 검색 참고' if evidence.get('network_used') and not evidence.get('search_error') else '추가 웹 검색 없음'
                 st.caption(f"{mode} · {evidence.get('model', '')}")
-    guide(state)
-    st.caption('ON/OFF는 앱의 외부 접근 설정입니다. 웹사이트 접속 자체에는 인터넷이 필요하며, 실제 인터넷 단절 환경은 PC 로컬 실행을 지원합니다.')
-    prompt = st.chat_input('궁금한 것을 편하게 물어보세요', max_chars=100000)
+    with st.bottom:
+        guide(state)
+        prompt = st.chat_input('궁금한 것을 편하게 물어보세요', max_chars=100000)
     if prompt:
         if prompt.strip().rstrip('.!') in ('새 대화 시작', '새 대화', '대화 초기화'):
             st.session_state.conversation_state = memory.new_session()

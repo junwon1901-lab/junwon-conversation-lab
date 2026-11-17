@@ -68,7 +68,10 @@ def handle(text, state, enabled=False, model=None, researcher=search, progress=l
             search_error = '검색 서비스에 연결하지 못했습니다.'
         state['search_status'] = {'ok': bool(sources), 'checked_at': memory.now(), 'query': query}
     # A follow-up may explain a previously retrieved passage without claiming a new search.
-    previous_sources = state.get('last_sources', []) if not sources and not search_error else []
+    followup = re.search(r'방금|그걸|그것|그 내용|그 자료|그 설명|이어서|더 쉽게|쉽게 다시|첫 번째|두 번째|세 번째|위 내용|위 자료|요약해', text)
+    previous_sources = state.get('last_sources', []) if followup and not sources and not search_error else []
+    if not followup and not sources:
+        state.pop('last_sources', None)
     progress('검색 자료와 대화 맥락을 바탕으로 답변을 작성하고 있습니다.' if sources else '대화 맥락을 바탕으로 답변을 작성하고 있습니다.')
     reply, evidence = model.answer(text, state, policy, sources=sources or previous_sources, search_error=search_error)
     if search_error:

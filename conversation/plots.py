@@ -43,7 +43,7 @@ def draw_result(run, *, errors_only=False):
         st.markdown('#### 오차가 큰 예측')
         table = pd.DataFrame(analysis.worst_errors(run)).drop(columns=['hull','Fn'], errors='ignore').rename(columns={
             'row':'원자료 행','actual':'실제값','predicted':'예측값','residual':'잔차','absolute_error':'절대오차','predicted_actual_ratio':'예측/실제'})
-        st.dataframe(table, hide_index=True, width='stretch')
+        st.table(table, hide_index=True, width='stretch')
         return
     st.markdown(f"### {selected['name']}" + (' · 비교 결과' if len(run['models']) > 1 else ' · 분석 결과'))
     st.caption(f"{selected['data']['source'] if custom else '공개 선체 저항 데이터'} · {selected['data']['rows']:,}행 · {evaluation}")
@@ -72,7 +72,7 @@ def draw_result(run, *, errors_only=False):
     if not custom:
         st.caption('목표값: Rt/Δ × 10³ · 힘의 단위 N이 아닙니다. 같은 선박의 행은 학습·검증·테스트에 섞이지 않습니다.')
     rows = [m for r in run['models'] for m in r['metrics'] if m['split'] == evaluation]
-    st.dataframe(pd.DataFrame(rows).rename(columns={'model':'모델','R2':'R²','rows':'평가 행 수','negative_predictions':'음수 예측 수'})[['모델','R²','RMSE','MAE','평가 행 수','음수 예측 수']], hide_index=True, width='stretch')
+    st.table(pd.DataFrame(rows).rename(columns={'model':'모델','R2':'R²','rows':'평가 행 수','negative_predictions':'음수 예측 수'})[['모델','R²','RMSE','MAE','평가 행 수','음수 예측 수']].round(4), hide_index=True, width='stretch')
     neural = next((r for r in run['models'] if r['kind'] == 'neural'), None)
     if neural:
         st.markdown('#### 신경망은 이렇게 연결됩니다')
@@ -88,7 +88,7 @@ def draw_result(run, *, errors_only=False):
     if run.get('epoch_candidates'):
         st.markdown('#### 50 / 500 epoch 상한 비교')
         rows = [{k:v for k,v in r.items() if k!='history'} for r in run['epoch_candidates']]
-        st.dataframe(pd.DataFrame(rows), hide_index=True, width='stretch')
+        st.table(pd.DataFrame(rows).round(4), hide_index=True, width='stretch')
     st.caption(run['selection_basis'])
     st.caption(run['note'])
     st.caption('이어가기: x가 10일 때 예측해줘 · 다른 모델로 학습해줘 · 오차가 큰 예측 10개 보여줘 · 보고서 만들어줘' if custom and len(selected['data']['features']) == 1 else '이어가기: 오차가 큰 예측 10개 보여줘 · 보고서 만들어줘 · 이전 결과 보여줘')

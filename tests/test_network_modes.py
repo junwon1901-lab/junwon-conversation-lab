@@ -78,6 +78,24 @@ def test_followup_retains_source_and_session_isolation():
     assert not other['messages'] and 'last_sources' not in other
 
 
+def test_unrelated_topic_does_not_carry_old_search_sources():
+    state = session.new_session()
+    state['last_sources'] = [{'title': 'Old topic'}]
+    result = handle('오늘 발표 준비를 도와줘', state, True, model_for('chat'), no_socket)
+    assert result['sources'] == []
+    assert not result['evidence']['reused_sources']
+    assert 'last_sources' not in state
+
+
+def test_reply_does_not_invent_citations_or_remote_images():
+    state = session.new_session()
+    model = model_for('chat')
+    model.answer.return_value = ('설명 [1] [99]. ![hidden](https://example.com/a.png)', {'model': '테스트 대역'})
+    result = handle('인사를 해줘', state, False, model, no_socket)
+    assert '[1]' not in result['reply'] and '[99]' not in result['reply']
+    assert 'https://' not in result['reply']
+
+
 def test_ui_switch_blocks_probe_and_commands_need_no_llm(monkeypatch):
     monkeypatch.setattr('conversation.ui.probe', lambda _: {'connected': True, 'checked_at': 'test'})
     app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / 'app.py'), default_timeout=60).run()
