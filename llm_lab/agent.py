@@ -42,7 +42,8 @@ def execute_plan(text, session, plan, evidence):
             if m['negative_predictions'] and dataset is None:
                 lines.append(f"  음수 예측 {m['negative_predictions']}개: 저항의 물리적 의미에 맞지 않는 예측입니다.")
         if action=='compare':
-            lines.append(f"{'교차검증' if result.get('small_sample') else '검증'} RMSE로 선택한 모델: **{analysis.NAMES[result['selected']]}**.")
+            selected_name = next(m['name'] for m in result['models'] if m['kind'] == result['selected'])
+            lines.append(f"{'교차검증' if result.get('small_sample') else '검증'} RMSE로 선택한 모델: **{selected_name}**.")
         if action=='epoch_compare':
             lines.append('50은 비교할 상한이며 정답으로 지정된 값이 아닙니다. 두 후보의 검증 RMSE를 비교했습니다.')
             for row in result['epoch_candidates']:

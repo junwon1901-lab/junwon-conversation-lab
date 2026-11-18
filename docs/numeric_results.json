@@ -1,0 +1,370 @@
+{
+  "checked_at": "2026-11-17T19:49:00+09:00",
+  "custom_six_points": {
+    "selected": "linear",
+    "selection_basis": "동일한 최대 5-fold 교차검증 RMSE (각 행을 학습에서 제외해 예측)",
+    "models": [
+      {
+        "kind": "linear",
+        "name": "선형회귀",
+        "equation": "y = 2·x +3",
+        "metrics": [
+          {
+            "model": "선형회귀",
+            "split": "학습",
+            "rows": 6,
+            "R2": 1.0,
+            "RMSE": 1.4503892858778862e-15,
+            "MAE": 1.1842378929335002e-15,
+            "negative_predictions": 0
+          },
+          {
+            "model": "선형회귀",
+            "split": "교차검증",
+            "rows": 6,
+            "R2": 1.0,
+            "RMSE": 2.432376777795247e-15,
+            "MAE": 1.924386576016938e-15,
+            "negative_predictions": 0
+          }
+        ],
+        "data": {
+          "source": "사용자 입력",
+          "features": [
+            "x"
+          ],
+          "target": "y",
+          "rows": 6
+        },
+        "config": {
+          "standardize_train_only": true,
+          "cross_validation_folds": 5,
+          "hidden_layers": [],
+          "activation": null,
+          "degree": 1
+        }
+      },
+      {
+        "kind": "polynomial",
+        "name": "다항회귀 (2차)",
+        "equation": "y = -2.47682e-16·x^2 +2·x +3",
+        "metrics": [
+          {
+            "model": "다항회귀 (2차)",
+            "split": "학습",
+            "rows": 6,
+            "R2": 1.0,
+            "RMSE": 1.7007321910901718e-15,
+            "MAE": 1.4802973661668755e-15,
+            "negative_predictions": 0
+          },
+          {
+            "model": "다항회귀 (2차)",
+            "split": "교차검증",
+            "rows": 6,
+            "R2": 1.0,
+            "RMSE": 3.571169458464975e-15,
+            "MAE": 2.5165055224836883e-15,
+            "negative_predictions": 0
+          }
+        ],
+        "data": {
+          "source": "사용자 입력",
+          "features": [
+            "x"
+          ],
+          "target": "y",
+          "rows": 6
+        },
+        "config": {
+          "standardize_train_only": true,
+          "cross_validation_folds": 5,
+          "hidden_layers": [],
+          "activation": null,
+          "degree": 2
+        }
+      },
+      {
+        "kind": "neural",
+        "name": "인공신경망",
+        "equation": "y = MLP(x) · 은닉층 16 → 8 · tanh",
+        "metrics": [
+          {
+            "model": "인공신경망",
+            "split": "학습",
+            "rows": 6,
+            "R2": 0.9998574510591055,
+            "RMSE": 0.04078076724514561,
+            "MAE": 0.03623847143642397,
+            "negative_predictions": 0
+          },
+          {
+            "model": "인공신경망",
+            "split": "교차검증",
+            "rows": 6,
+            "R2": 0.919615137664899,
+            "RMSE": 0.9684128220493116,
+            "MAE": 0.639352146895451,
+            "negative_predictions": 0
+          }
+        ],
+        "data": {
+          "source": "사용자 입력",
+          "features": [
+            "x"
+          ],
+          "target": "y",
+          "rows": 6
+        },
+        "config": {
+          "standardize_train_only": true,
+          "cross_validation_folds": 5,
+          "hidden_layers": [
+            16,
+            8
+          ],
+          "activation": "tanh",
+          "degree": 1
+        }
+      }
+    ]
+  },
+  "custom_prediction": {
+    "value": 23.000000000000007,
+    "target": "y",
+    "model": "선형회귀",
+    "inputs": {
+      "x": 10.0
+    },
+    "outside_training_range": [
+      "x"
+    ],
+    "warning": "전체 입력 목록으로 학습한 모델의 예측입니다. 적은 데이터의 외삽은 특히 불확실합니다."
+  },
+  "public_hull_data": {
+    "selected": "neural",
+    "selection_basis": "검증 RMSE (같은 선박 그룹 분리)",
+    "models": [
+      {
+        "kind": "linear",
+        "name": "다변량 선형회귀",
+        "equation": null,
+        "metrics": [
+          {
+            "model": "다변량 선형회귀",
+            "split": "학습",
+            "rows": 640,
+            "R2": 0.8895799435498883,
+            "RMSE": 16.263005045663615,
+            "MAE": 13.402741994711068,
+            "negative_predictions": 151
+          },
+          {
+            "model": "다변량 선형회귀",
+            "split": "검증",
+            "rows": 176,
+            "R2": 0.8674252276309968,
+            "RMSE": 15.444250699360369,
+            "MAE": 12.204780529526069,
+            "negative_predictions": 39
+          },
+          {
+            "model": "다변량 선형회귀",
+            "split": "테스트",
+            "rows": 202,
+            "R2": 0.8044109890702791,
+            "RMSE": 22.911247140465395,
+            "MAE": 18.086400912898384,
+            "negative_predictions": 43
+          }
+        ],
+        "data": {
+          "rows": 1018,
+          "columns": 21,
+          "hulls": 70,
+          "dropped_rows": 0,
+          "features": [
+            "프루드수_Fn",
+            "레이놀즈수_Rn",
+            "주형계수_Cp",
+            "방형계수_Cb",
+            "수선면계수_Cw",
+            "길이폭비_L/B",
+            "폭흘수비_B/T",
+            "부심위치_LCB/L"
+          ],
+          "target": "전저항_Rt/Δ×10³",
+          "sha256": "40bab49d0cd2c0467aab98c88fcf5739f7b4ebe613ffbf1dd80fef5a9af28bf6",
+          "split_rows": {
+            "학습": 640,
+            "검증": 176,
+            "테스트": 202
+          },
+          "split_hulls": {
+            "학습": 44,
+            "검증": 12,
+            "테스트": 14
+          },
+          "source": "https://data.mendeley.com/datasets/gw23dgzn6h/4",
+          "license": "CC BY 4.0"
+        },
+        "config": {
+          "standardize_train_only": true,
+          "degree": 1,
+          "ridge_alpha": null
+        }
+      },
+      {
+        "kind": "polynomial",
+        "name": "다항회귀",
+        "equation": null,
+        "metrics": [
+          {
+            "model": "다항회귀 (2차)",
+            "split": "학습",
+            "rows": 640,
+            "R2": 0.9439442010158026,
+            "RMSE": 11.5874290476962,
+            "MAE": 9.08280695171371,
+            "negative_predictions": 108
+          },
+          {
+            "model": "다항회귀 (2차)",
+            "split": "검증",
+            "rows": 176,
+            "R2": 0.9084866908778255,
+            "RMSE": 12.831532477542474,
+            "MAE": 10.124670043910152,
+            "negative_predictions": 29
+          },
+          {
+            "model": "다항회귀 (2차)",
+            "split": "테스트",
+            "rows": 202,
+            "R2": 0.8925192413437077,
+            "RMSE": 16.984073726085256,
+            "MAE": 12.493508790242293,
+            "negative_predictions": 19
+          }
+        ],
+        "data": {
+          "rows": 1018,
+          "columns": 21,
+          "hulls": 70,
+          "dropped_rows": 0,
+          "features": [
+            "프루드수_Fn",
+            "레이놀즈수_Rn",
+            "주형계수_Cp",
+            "방형계수_Cb",
+            "수선면계수_Cw",
+            "길이폭비_L/B",
+            "폭흘수비_B/T",
+            "부심위치_LCB/L"
+          ],
+          "target": "전저항_Rt/Δ×10³",
+          "sha256": "40bab49d0cd2c0467aab98c88fcf5739f7b4ebe613ffbf1dd80fef5a9af28bf6",
+          "split_rows": {
+            "학습": 640,
+            "검증": 176,
+            "테스트": 202
+          },
+          "split_hulls": {
+            "학습": 44,
+            "검증": 12,
+            "테스트": 14
+          },
+          "source": "https://data.mendeley.com/datasets/gw23dgzn6h/4",
+          "license": "CC BY 4.0"
+        },
+        "config": {
+          "standardize_train_only": true,
+          "degree": 2,
+          "ridge_alpha": 1.0
+        }
+      },
+      {
+        "kind": "neural",
+        "name": "인공신경망",
+        "equation": null,
+        "metrics": [
+          {
+            "model": "인공신경망",
+            "split": "학습",
+            "rows": 640,
+            "R2": 0.9946588125587006,
+            "RMSE": 3.5768087881648922,
+            "MAE": 1.919098406682799,
+            "negative_predictions": 0
+          },
+          {
+            "model": "인공신경망",
+            "split": "검증",
+            "rows": 176,
+            "R2": 0.9460421011532774,
+            "RMSE": 9.852896312142324,
+            "MAE": 4.858809673205485,
+            "negative_predictions": 0
+          },
+          {
+            "model": "인공신경망",
+            "split": "테스트",
+            "rows": 202,
+            "R2": 0.9258856674566451,
+            "RMSE": 14.103522822877059,
+            "MAE": 8.010266793644597,
+            "negative_predictions": 0
+          }
+        ],
+        "data": {
+          "rows": 1018,
+          "columns": 21,
+          "hulls": 70,
+          "dropped_rows": 0,
+          "features": [
+            "프루드수_Fn",
+            "레이놀즈수_Rn",
+            "주형계수_Cp",
+            "방형계수_Cb",
+            "수선면계수_Cw",
+            "길이폭비_L/B",
+            "폭흘수비_B/T",
+            "부심위치_LCB/L"
+          ],
+          "target": "전저항_Rt/Δ×10³",
+          "sha256": "40bab49d0cd2c0467aab98c88fcf5739f7b4ebe613ffbf1dd80fef5a9af28bf6",
+          "split_rows": {
+            "학습": 640,
+            "검증": 176,
+            "테스트": 202
+          },
+          "split_hulls": {
+            "학습": 44,
+            "검증": 12,
+            "테스트": 14
+          },
+          "source": "https://data.mendeley.com/datasets/gw23dgzn6h/4",
+          "license": "CC BY 4.0"
+        },
+        "config": {
+          "hidden_layers": [
+            64,
+            32,
+            16
+          ],
+          "activation": "relu",
+          "learning_rate": 0.001,
+          "max_epochs": 500,
+          "patience": 40,
+          "min_delta": 1e-05,
+          "alpha": 0.0001,
+          "test_fraction": 0.2,
+          "validation_fraction": 0.2,
+          "random_state": 42,
+          "target_transform": "log",
+          "split_mode": "group"
+        }
+      }
+    ]
+  }
+}
