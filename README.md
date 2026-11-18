@@ -1,5 +1,7 @@
 # Conversation Lab
 
+[실행 사이트](https://junwon-conversation-lab.streamlit.app/) · [Notion 보고서](https://app.notion.com/p/41cd259f3ec781d2a072c3bc566fafd3?pvs=204) · [검증 기록](docs/verification.md)
+
 서준원 · 동아대학교 조선해양공학과 · 데이터처리개론
 
 기존 회귀·인공신경망 분석 프로그램을 바탕으로 자유 대화와 인터넷 검색을 추가한 독립 프로젝트다. 기존 `data-analyzer` 저장소와 두 Streamlit 앱, 이전 Notion 보고서는 수정하지 않는다.

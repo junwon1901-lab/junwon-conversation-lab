@@ -11,7 +11,7 @@ from conversation.plots import draw_result
 from conversation.web import NetworkPolicy, probe
 
 REPO = 'https://github.com/junwon1901-lab/junwon-conversation-lab'
-REPORT = ''
+REPORT = 'https://app.notion.com/p/41cd259f3ec781d2a072c3bc566fafd3?pvs=204'
 
 
 @st.fragment(run_every='30s')
