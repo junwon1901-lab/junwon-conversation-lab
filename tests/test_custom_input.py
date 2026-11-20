@@ -22,7 +22,7 @@ def test_custom_models(kind):
 def test_invalid(csv):
     with pytest.raises(ValueError): parse_dataset(csv)
 def test_chat_workflow():
-    with patch('llm_lab.cloud_client.LlamaCppClient',return_value=NoLLM()):
+    with patch('conversation.model.ConversationModel.explain_tool', return_value=('테스트용 해석', {})):
         a=AppTest.from_file(str(Path(__file__).resolve().parents[1]/'app.py'),default_timeout=60).run()
         for prompt in ['데이터 입력\n'+CSV,'선형회귀 해줘','예측: x=12','비선형회귀 해줘','신경망 학습해줘']:
             a.chat_input[0].set_value(prompt).run()

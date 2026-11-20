@@ -1,5 +1,7 @@
 # Conversation Lab
 
+**11/20 강의 반영:** 실제 분석 결과를 LLM에 돌려주는 양방향 실행, 로컬 문서 RAG, 대화 기억을 추가했습니다. [변경 내용·사용 순서·코드 설명](docs/nov20-upgrade.md)을 먼저 읽어 주세요.
+
 [실행 사이트](https://junwon-conversation-lab.streamlit.app/) · [Notion 보고서](https://app.notion.com/p/41cd259f3ec781d2a072c3bc566fafd3?pvs=204) · [검증 기록](docs/verification.md)
 
 서준원 · 동아대학교 조선해양공학과 · 데이터처리개론

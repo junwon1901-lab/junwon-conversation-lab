@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import threading
+import uuid
 import time
 from urllib.request import Request, urlopen
 from llm_lab.client import LLMError, SYSTEM, SCHEMA, validate_plan
@@ -32,7 +33,8 @@ def ensure_model(allow_download=True):
     if not allow_download:
         raise LLMError('OFF 상태에서는 모델을 다운로드하지 않습니다. 기존 분석 명령은 바로 사용할 수 있습니다.')
     path.parent.mkdir(parents=True,exist_ok=True)
-    partial=path.with_suffix('.part')
+    # Separate workers must never write into the same temporary download.
+    partial=path.with_name(path.name+'.'+uuid.uuid4().hex+'.part')
     try:
         digest=hashlib.sha256();size=0
         with urlopen(Request(MODEL_URL,headers={'User-Agent':'HullLLMAssignment/2.0'}),timeout=120) as source,partial.open('wb') as dest:
@@ -40,7 +42,7 @@ def ensure_model(allow_download=True):
                 size+=len(chunk)
                 if size>MODEL_BYTES:raise ValueError('모델 파일 크기 불일치')
                 digest.update(chunk);dest.write(chunk)
-        if size!=MODEL_BYTES or digest.hexdigest()!=MODEL_SHA256:raise ValueError('모델 무결성 검사 실패')
+        if size!=MODEL_BYTES or digest.hexdigest()!=MODEL_SHA256 or _digest(partial)!=MODEL_SHA256:raise ValueError('모델 무결성 검사 실패')
         partial.replace(path)
     except Exception as exc:
         partial.unlink(missing_ok=True)

@@ -45,7 +45,7 @@ def test_short_data_and_followup(tmp_path, monkeypatch):
 
 def test_inline_results_and_fixed_guide(tmp_path,monkeypatch):
     monkeypatch.setenv('LLM_SESSION_DIR',str(tmp_path))
-    with patch('llm_lab.cloud_client.LlamaCppClient', return_value=NoLLM()):
+    with patch('conversation.model.ConversationModel.explain_tool', return_value=('테스트용 해석', {})):
         app=AppTest.from_file(str(Path(__file__).resolve().parents[1]/'app.py'),default_timeout=90).run()
         assert not app.exception and not app.button
         app.chat_input[0].set_value(EXAMPLE).run()

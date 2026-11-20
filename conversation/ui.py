@@ -38,6 +38,7 @@ def guide(state):
         st.markdown('**채팅 가이드 · 항상 표시**')
         st.markdown('자유롭게 질문하고 `더 쉽게 설명해줘`로 이어가세요. 웹 자료가 필요하면 `검색해줘`를 덧붙이세요.')
         st.markdown('`선형회귀 해줘` · `비선형회귀 해줘` · `신경망 학습해줘` · `모델 3가지 비교해줘`')
+        st.caption('문서: 자료 등록: 제목 + 다음 줄에 본문 · 자료 목록 · 기억해: 내용 · 기억 보여줘')
         if data:
             st.caption(f"내 데이터 {len(data['rows'])}행 · 입력 {', '.join(data['columns'][:-1])} · 목표 {data['columns'][-1]} · 예측: " + ', '.join(k+'=값' for k in data['columns'][:-1]))
         else:
@@ -76,6 +77,16 @@ def render():
             if message['role'] == 'user' and len(content) > 1800:
                 content = content[:1200] + '\n\n… (입력 데이터 등록됨)'
             st.markdown(content)
+            receipt = message.get('tool_receipt')
+            if receipt:
+                st.caption(f"실행 확인 {receipt['id']} · {receipt['action']} · {receipt['status']} · {receipt['dataset']['source']} {receipt['dataset']['rows']}행 · LLM 결과 수신: {receipt.get('llm_feedback', 'pending')}")
+            if message.get('interpretation'):
+                st.markdown('**실행 결과에 대한 LLM 해석**')
+                st.markdown(message['interpretation'])
+            for i, doc in enumerate(message.get('knowledge', []), 1):
+                st.markdown(f'**[자료{i}] {doc["title"]}** · 조각 {doc["chunk"]}')
+                st.caption(doc['source'])
+                st.text(doc['text'])
             if message.get('report'):
                 st.markdown(message['report'])
             elif message.get('run_id') in runs:
