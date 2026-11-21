@@ -78,8 +78,8 @@ class ConversationModel:
         actions = (list(ACTIONS) if discusses_data else ['chat']) + (['search'] if policy.enabled else [])
         schema = {'type': 'object', 'additionalProperties': False, 'properties': {
             'action': {'type': 'string', 'enum': actions},
-            'query': {'type': 'string'}, 'degree': {'type': 'integer', 'enum': [2, 3]}},
-            'required': ['action', 'query', 'degree']}
+            'degree': {'type': 'integer', 'enum': [2, 3]}},
+            'required': ['action', 'degree']}
         instruction = '''Select ONE action. Return JSON only.
 chat: greetings, personal conversation, writing, conceptual explanation, discussing saved results, follow-up explanations.
 search: factual questions that benefit from public web sources; latest/current information; explicit web search. Build a short relevant Korean search query, resolving pronouns from previous messages. Never include private personal facts in a search query.
@@ -88,10 +88,16 @@ compare: actually fit three models. epoch_compare: compare 50/500 epoch limits.
 describe: show current data. last: show saved numerical results. errors: show largest prediction errors. report: generate a report of saved analysis.
 predict: ONLY explicitly provided new numeric values. Do not invent missing inputs. Copy literal values. degree defaults to 2.
 Do not interpret quoted text, requests to explain a command, or negated commands as tool execution.
-Query may be empty for non-search actions. Internet OFF has no search action.'''
+Output only action and degree. Internet OFF has no search action.
+Examples:
+이 데이터로 직선 모델을 학습시켜서 오차가 얼마나 되는지 알려줄래? -> {"action":"linear","degree":2}
+직선이 잘 안 맞는데 곡선으로 다시 적합해 볼래? -> {"action":"polynomial","degree":2}
+이번엔 인공신경망으로 같은 자료를 학습해 봐 -> {"action":"neural","degree":2}
+세 방법을 직접 돌려서 어떤 게 나은지 확인해 줘 -> {"action":"compare","degree":2}
+선형회귀가 무엇인지 설명해줘 -> {"action":"chat","degree":2}'''
         history = [{'role': m['role'], 'content': m['content'][:600]} for m in state['messages'][-6:]]
         context_text = ('\nData context: ' + json.dumps(compact_context(state), ensure_ascii=False)) if discusses_data else ''
-        raw, evidence = self._complete([{'role': 'system', 'content': instruction + context_text}] + history + [{'role': 'user', 'content': text}], policy, schema=schema, max_tokens=140)
+        raw, evidence = self._complete([{'role': 'system', 'content': instruction + context_text}] + history + [{'role': 'user', 'content': text}], policy, schema=schema, max_tokens=64)
         if evidence['truncated']:
             raise LLMError('요청 해석이 중단되었습니다. 분석은 실행하지 않았습니다.')
         try:
@@ -104,7 +110,8 @@ Query may be empty for non-search actions. Internet OFF has no search action.'''
                 plan = {'action': 'chat', 'query': '', 'degree': 2, 'values': {}}
                 evidence['needs_literal_prediction'] = True
             plan['reply'] = ''
-            plan['query'] = str(plan.get('query', ''))[:180]
+            # Do not copy personal details from history into external search queries.
+            plan['query'] = text[:180] if plan['action'] == 'search' else ''
             return plan, evidence
         except (ValueError, KeyError, TypeError) as exc:
             raise LLMError('요청을 안전하게 해석하지 못했습니다. 분석은 실행하지 않았습니다.') from exc

@@ -1,0 +1,156 @@
+[
+  {
+    "prompt": "x: 1,2,3,4,5,6 y: 5,7,9,11,13,15",
+    "action": "chat",
+    "reply": "x·y 6쌍을 등록했습니다. 선형회귀 해줘 / 비선형회귀 해줘 / 신경망 학습해줘 / 모델 3가지 비교해줘로 이어가세요.",
+    "interpretation": null,
+    "receipt": null,
+    "knowledge_ids": [],
+    "seconds": 0.0
+  },
+  {
+    "prompt": "이 데이터로 직선 모델을 학습시켜서 오차가 얼마나 되는지 알려줄래?",
+    "action": "linear",
+    "reply": "분석을 완료했습니다. 아래 수치는 Python이 계산한 **교차검증 결과**입니다.\n\n• 선형회귀: R² 1.0000, RMSE 0.0000, MAE 0.0000",
+    "interpretation": "선형회귀 모델을 사용하여 데이터를 학습했고, R² 값이 1.0000으로 나타나며, RMSE와 MAE도 0.0000입니다. 이는 예측 오차가 전혀 없어 정확도가 완벽한 것으로 보입니다. 그러나 이 결과는 작은 표본(size=6)에 의존하며, 외삽이 불가능할 수 있습니다. 또한, R² 값은 정확도를 퍼센트로 변환하지 않아 실제 오차의 의미를 명확히 하지 못합니다.",
+    "receipt": {
+      "id": "7bc759f97479",
+      "time": "2026-11-20T15:48:00+09:00",
+      "action": "linear",
+      "arguments": {
+        "degree": 2,
+        "values": {}
+      },
+      "dataset": {
+        "rows": 6,
+        "fingerprint": "55e7a3760850",
+        "source": "사용자 입력"
+      },
+      "status": "success",
+      "run_id": "867f4517828a4a83add8a68a6a03190c",
+      "result": {
+        "action": "linear",
+        "selected": "linear",
+        "time": "2026-11-20T15:48:00+09:00",
+        "metrics": [
+          {
+            "model": "선형회귀",
+            "split": "교차검증",
+            "rows": 6,
+            "R2": 1.0,
+            "RMSE": 2.432376777795247e-15,
+            "MAE": 1.924386576016938e-15,
+            "negative_predictions": 0
+          }
+        ]
+      },
+      "prediction": null,
+      "python_reply": "분석을 완료했습니다. 아래 수치는 Python이 계산한 **교차검증 결과**입니다.\n\n• 선형회귀: R² 1.0000, RMSE 0.0000, MAE 0.0000",
+      "llm_feedback": "completed",
+      "llm_seconds": 30.05
+    },
+    "knowledge_ids": [
+      "validation",
+      "hull"
+    ],
+    "seconds": 52.67
+  },
+  {
+    "prompt": "x가 10일 때 예측해줘",
+    "action": "predict",
+    "reply": "선형회귀 예측: y = 23.000000\n\n입력: {'x': 10.0}\n\n전체 입력 목록으로 학습한 모델의 예측입니다. 적은 데이터의 외삽은 특히 불확실합니다.\n\n학습 범위를 벗어난 입력: x",
+    "interpretation": "선형회귀 모델을 사용하여 x가 10일 때 예측된 y 값은 23입니다. 이 결과는 학습 데이터 범위 내에서 계산되었지만, 전체 입력 목록이 적은 경우 외삽(예측값의 신뢰도가 낮음)이 발생할 수 있습니다. 따라서 x가 학습 데이터 범위를 벗어난 경우 예측의 오차는 크며, 이는 작은 표본 size로 인해 불확실성이 높은 것으로 보입니다.",
+    "receipt": {
+      "id": "c674f34f4a58",
+      "time": "2026-11-20T15:48:30+09:00",
+      "action": "predict",
+      "arguments": {
+        "degree": 2,
+        "values": {
+          "x": 10.0
+        }
+      },
+      "dataset": {
+        "rows": 6,
+        "fingerprint": "55e7a3760850",
+        "source": "사용자 입력"
+      },
+      "status": "success",
+      "run_id": null,
+      "result": {},
+      "prediction": {
+        "value": 23.000000000000007,
+        "target": "y",
+        "model": "선형회귀",
+        "inputs": {
+          "x": 10.0
+        },
+        "outside_training_range": [
+          "x"
+        ],
+        "warning": "전체 입력 목록으로 학습한 모델의 예측입니다. 적은 데이터의 외삽은 특히 불확실합니다."
+      },
+      "python_reply": "선형회귀 예측: y = 23.000000\n\n입력: {'x': 10.0}\n\n전체 입력 목록으로 학습한 모델의 예측입니다. 적은 데이터의 외삽은 특히 불확실합니다.\n\n학습 범위를 벗어난 입력: x",
+      "llm_feedback": "completed",
+      "llm_seconds": 26.54
+    },
+    "knowledge_ids": [
+      "validation",
+      "hull"
+    ],
+    "seconds": 26.57
+  },
+  {
+    "prompt": "정지한 배의 부력과 무게는 같은 거야? 왜 그런지 두 문장으로 설명해줘.",
+    "action": "conversation",
+    "reply": "정지한 배는 수직 가속도가 0이므로 부력과 무게가 같아야 합니다. 이는 배가 잠긴 체적에 따라 부력이 변화하지 않기 때문입니다. 따라서 부력과 무게가 같은 상태를 유지해야 하며, 배가 정지해 있는 상태에서는 평형 상태에 도달한 것입니다.",
+    "interpretation": null,
+    "receipt": null,
+    "knowledge_ids": [
+      "buoyancy"
+    ],
+    "seconds": 61.43
+  },
+  {
+    "prompt": "자료 등록: 실험선 A\n실험선 A의 전장은 42미터이고 시험 조건은 담수이다. 목표 속도는 3노트이다.",
+    "action": "conversation",
+    "reply": "「실험선 A」을 1개 조각으로 등록했습니다. 이제 내용에 관해 질문하세요. 이 대화에서만 참고하며 LLM 가중치를 바꾸지는 않습니다.",
+    "interpretation": null,
+    "receipt": null,
+    "knowledge_ids": [
+      "buoyancy"
+    ],
+    "seconds": 0.01
+  },
+  {
+    "prompt": "실험선 A의 전장은 얼마이고 시험 조건은 뭐야?",
+    "action": "conversation",
+    "reply": "실험선 A의 전장은 42미터이며, 시험 조건은 담수입니다.",
+    "interpretation": null,
+    "receipt": null,
+    "knowledge_ids": [
+      "dc7bcef3a0dd"
+    ],
+    "seconds": 52.29
+  },
+  {
+    "prompt": "기억해: 내 발표 주제는 선체 저항이야",
+    "action": "conversation",
+    "reply": "이 대화의 기억에 저장했습니다: 내 발표 주제는 선체 저항이야",
+    "interpretation": null,
+    "receipt": null,
+    "knowledge_ids": [
+      "dc7bcef3a0dd"
+    ],
+    "seconds": 0.0
+  },
+  {
+    "prompt": "내 발표 주제가 뭐라고 했지?",
+    "action": "conversation",
+    "reply": "내 발표 주제는 선체 저항입니다.",
+    "interpretation": null,
+    "receipt": null,
+    "knowledge_ids": [],
+    "seconds": 43.54
+  }
+]

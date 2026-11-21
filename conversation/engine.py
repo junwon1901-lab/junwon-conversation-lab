@@ -62,6 +62,8 @@ def handle(text, state, enabled=False, model=None, researcher=search, progress=l
     except LLMError:
         # A failed classifier never executes a tool; ordinary dialogue can still continue.
         plan, routing = {'action': 'chat', 'query': '', 'degree': 2, 'values': {}}, {'route_fallback': True}
+        if re.search(r'데이터|회귀|모델|신경망', text) and re.search(r'학습|돌려|적합|분석|실행', text) and not re.search(r'하지\s*마|하지\s*말|말고|설명', text):
+            return record(text, '분석 요청을 안전하게 해석하지 못해 **실행하지 않았습니다**. `선형회귀 해줘`, `비선형회귀 해줘`, `신경망 학습해줘`로 다시 요청하세요. 실행 전 오차나 예측값을 만들어 답하지 않습니다.', state, routing)
     if enabled and re.search(r'(?:검색|찾아)\s*(?:해서|해서\s*알려|해\s*줘|줘|봐)|search\s+(?:for|the)', text, re.I):
         plan['action'] = 'search'
         plan['query'] = plan.get('query') or text[:180]
