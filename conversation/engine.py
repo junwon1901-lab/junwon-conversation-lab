@@ -8,6 +8,7 @@ from conversation.model import ConversationModel
 from conversation.web import NetworkPolicy, search
 from conversation import knowledge
 from conversation.tools import run_tool
+from conversation.grounding import check_documents, check_analysis
 
 
 def record(text, reply, state, evidence, sources=None):
@@ -98,6 +99,11 @@ def handle(text, state, enabled=False, model=None, researcher=search, progress=l
         state.pop('last_sources', None)
     progress('검색 자료와 대화 맥락을 바탕으로 답변을 작성하고 있습니다.' if sources else '대화 맥락을 바탕으로 답변을 작성하고 있습니다.')
     reply, evidence = model.answer(text, state, policy, sources=sources or previous_sources, search_error=search_error)
+    reply, corrections = check_documents(reply, local_refs)
+    if state.get('tool_receipts') and re.search(r'예측|범위|외삽|정확|오차|결과|방금', text):
+        reply, analysis_corrections = check_analysis(reply, state['tool_receipts'][-1])
+        corrections += analysis_corrections
+    evidence['grounding_corrections'] = corrections
     if search_error:
         reply = '**이번 검색을 완료하지 못했습니다. 최신 사실은 확인되지 않았습니다.**\n\n' + reply
     if evidence.get('truncated'):

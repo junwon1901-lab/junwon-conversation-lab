@@ -7,6 +7,7 @@ import uuid
 from llm_lab.agent import execute_plan
 from llm_lab import session as memory
 from llm_lab.client import LLMError
+from conversation.grounding import check_analysis
 
 ACTIONS = frozenset(('describe', 'linear', 'polynomial', 'neural', 'compare', 'epoch_compare', 'last', 'errors', 'report', 'predict'))
 
@@ -58,6 +59,8 @@ def run_tool(text, state, plan, evidence, model, policy, progress):
         try:
             explanation, meta = model.explain_tool(text, state, policy, receipt)
             explanation = re.sub(r'!\[[^\]]*\]\([^)]*\)', '', explanation)
+            explanation, issues = check_analysis(explanation, receipt)
+            receipt['grounding_corrections'] = issues
             message['interpretation'] = explanation
             receipt['llm_feedback'] = 'completed'
             receipt['llm_seconds'] = meta.get('seconds')

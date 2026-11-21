@@ -25,8 +25,9 @@ def connection_status():
         checked = {**probe(NetworkPolicy(True)), 'tick': time.monotonic()}
         st.session_state.connection_check = checked
     color = 'on' if checked.get('connected') else 'uncertain'
-    title = 'INTERNET ON · 연결 확인' if checked.get('connected') else 'INTERNET ON · 연결 확인 실패'
+    title = 'INTERNET ON · 연결 확인' if checked.get('connected') else 'INTERNET ON · 점검 서버 응답 미확인'
     st.markdown(f'<div class="connection {color}">● {title}<span>{escape(checked.get("checked_at", ""))} · 기본 명령은 계속 사용 가능</span></div>', unsafe_allow_html=True)
+    st.caption(checked.get('detail', ''))
     last = st.session_state.get('conversation_state', {}).get('search_status')
     if last:
         st.caption(('최근 검색 성공' if last['ok'] else '최근 검색 실패 · 서비스 일시 제한 가능') + ' · ' + last['checked_at'])

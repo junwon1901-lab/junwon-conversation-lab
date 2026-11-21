@@ -69,14 +69,17 @@ def excerpt(url, policy):
 
 def probe(policy):
     policy.require()
-    try:
-        # A small, fixed endpoint. A successful probe does not guarantee every search provider is available.
-        response = requests.get('https://huggingface.co/api/models/Qwen/Qwen2.5-1.5B-Instruct-GGUF', timeout=(6, 8))
-        connected = response.status_code == 200
-        return {'connected': connected, 'checked_at': now(),
-                'detail': '외부 연결 확인 · 검색 서비스 상태는 질문마다 확인' if connected else '연결 확인 실패 · 기본 명령 사용 가능'}
-    except requests.RequestException:
-        return {'connected': False, 'checked_at': now(), 'detail': '연결 확인 실패 · 기본 명령 사용 가능'}
+    checks = []
+    for service, url in [('모델 저장소', 'https://huggingface.co/api/models/Qwen/Qwen3-1.7B'),
+                         ('공개 웹', 'https://www.wikipedia.org/')]:
+        try:
+            response = requests.get(url, timeout=(3, 4))
+            checks.append({'service': service, 'ok': response.status_code == 200, 'status': response.status_code})
+        except requests.RequestException:
+            checks.append({'service': service, 'ok': False, 'status': 'timeout_or_network_error'})
+    connected = any(c['ok'] for c in checks)
+    return {'connected': connected, 'checked_at': now(), 'checks': checks,
+            'detail': ' · '.join(c['service'] + (' 응답 확인' if c['ok'] else ' 확인 실패') for c in checks)}
 
 
 def search(query, policy, read_pages=True):
